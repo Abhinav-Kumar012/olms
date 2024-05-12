@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdbool.h>
 #include "../include/book.h"
 #include "../include/universal.h"
 int add_book(int fd,long long isbn,char *name,char *author,int copies){
@@ -87,4 +88,15 @@ int modify_book(int fd,long long isbn,char *value,int copies,int choice){
         }
     }
     return NOT_FOUND;
+}
+bool book_available(int fd,long long isbn){
+    lseek(fd, 0L, SEEK_SET);
+    book temp;
+    int size_book = sizeof(book);
+    while(read(fd, &temp, size_book) == size_book){
+        if(temp.isbn == isbn && temp.status == BOOK_EXIST && temp.no_of_copies > 0){
+            return true;
+        }
+    }
+    return false;
 }
