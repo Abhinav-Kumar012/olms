@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
-#include <stdbool.h>
 #include "../include/user.h"
 #include "../include/universal.h"
 int add_user(int fd,char *username,char *password){

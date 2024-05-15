@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #ifndef USER_H
 #define USER_H
 #define USER_EXIST 1

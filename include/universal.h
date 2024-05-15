@@ -6,4 +6,6 @@
 #define NOT_FOUND 1
 #define ALREADY_AVAL 2
 #define INVALID_CHOICE 3
+#define BOOK_ALREADY_BORROWED 4
+#define BOOK_NOT_BORROWED 5
 #endif
