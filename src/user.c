@@ -63,3 +63,17 @@ bool user_exists(int fd,char *username){
     }
     return false;
 }
+int login(int fd,char *uname,char *pass){
+    if(strcmp(uname, "admin") == 0 && strcmp(pass, "admin123") == 0){
+        return ADMIN_USER;
+    }
+    lseek(fd, 0L, SEEK_SET);
+    int size_user = sizeof(user);
+    user temp;
+    while (read(fd, &temp, size_user) == size_user){
+        if(strcmp(temp.name, uname) == 0 && temp.exists == USER_EXIST && strcmp(temp.password, pass) == 0){
+            return NORMAL_USER;
+        }
+    }
+    return INVALID_USER;
+}

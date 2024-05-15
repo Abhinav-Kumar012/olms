@@ -12,4 +12,5 @@ int add_user(int fd,char *username,char *password);
 int delete_user(int fd,char *username);
 int modify_user(int fd,char *username,char *new_password);
 bool user_exists(int fd,char *username);
+int login(int fd,char *uname,char *pass);
 #endif
