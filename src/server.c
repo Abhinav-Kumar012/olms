@@ -26,15 +26,17 @@ int normal_fxn(int csd,char *uname){
 }
 int admin_fxn(int csd,char *uname,int fd_books,int fd_users){
     int c = -1;
-    while(c != 0){
+    while(1){
         read(csd,&c,sizeof(int));
         if(c == 0){
-            return SUCCESS;
+            break;
         }
         long long isbn;
         int copies,stat;
         switch (c) {
-            case 1:
+            case 0:
+                break;
+            case 1:{
                 char author[100],name[100];
                 read(csd, name,100);
                 read(csd, author, 100);
@@ -42,13 +44,13 @@ int admin_fxn(int csd,char *uname,int fd_books,int fd_users){
                 read(csd, &copies, sizeof(int));
                 stat = add_book(fd_books, isbn,name,author,copies);
                 write(csd, &stat, sizeof(int));
-                break;
-            case 2:
+            }break;
+            case 2:{
                 read(csd,&isbn,sizeof(long long));
                 stat = delete_book(fd_books, isbn);
                 write(csd, &stat, sizeof(int));
-                break;
-            case 3:
+            }break;
+            case 3:{
                 char in[100];
                 int choi;
                 read(csd,&isbn,sizeof(long long));
@@ -57,16 +59,29 @@ int admin_fxn(int csd,char *uname,int fd_books,int fd_users){
                 read(csd,&copies,sizeof(int));
                 stat = modify_book(fd_books,isbn,in,copies,choi);
                 write(csd, &stat, sizeof(int));
-                break;
-            case 4:
+            }break;
+            case 4:{
                 read(csd,&isbn,sizeof(long long));
                 search_book(fd_books, csd, isbn);
-                break;
+            }break;
+            case 5:{
+                char uname[100],pass[100];
+                read(csd,uname,100);
+                read(csd,pass,100);
+                stat = add_user(fd_users, uname, pass);
+                write(csd,&stat,sizeof(int));
+            }break;
+            case 6:{
+                char uname[100],pass[100];
+                read(csd,uname,100);
+                read(csd,pass,100);
+                stat = modify_user(fd_users, uname, pass);
+                write(csd,&stat,sizeof(int));
+            }break;
             default:
                 break;
         }
     }
-    // printf("%d\n",c);
     return SUCCESS;
 }
 void *thread_fun(void *args){

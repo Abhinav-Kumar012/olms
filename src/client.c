@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <unistd.h>
+#include <signal.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include "../include/universal.h"
-
 int take_creds(int sd){
     int choice,valid;
     char uname[100],pass[100];
@@ -23,7 +24,7 @@ int take_creds(int sd){
 }
 int admin_menu(int sd){
     int c1 = -1;
-    while(c1 != 0){
+    while(1){
         printf("add a book -> 1\ndelete a number -> 2\nmodify a book -> 3\nsearch a book -> 4\nadd a user -> 5\nmodify password of a user -> 6\nlog out -> 0\n");
         printf("enter a option : ");
         scanf("%d",&c1);
@@ -35,11 +36,12 @@ int admin_menu(int sd){
         int copies,status;
         long long isbn;
         switch (c1) {
-            case 0:
+            case 0:{
                 printf("logged out\n");
-                return SUCCESS;
-                break;
-            case 1:
+                fflush(stdout);
+                exit(SUCCESS);
+            }break;
+            case 1:{
                 char name[100],author[100];
                 printf("enter name of book : ");
                 fflush(stdout);
@@ -67,8 +69,8 @@ int admin_menu(int sd){
                 }else{
                     printf("failed to add book\n");
                 }
-                break;
-            case 2:
+            }break;
+            case 2:{
                 printf("enter isbn of book to be deleted : ");
                 scanf("%lld",&isbn);
                 write(sd, &isbn, sizeof(long long));
@@ -80,8 +82,8 @@ int admin_menu(int sd){
                 }else{
                     fprintf(stderr,"failed to delete the book\n");
                 }
-                break;
-            case 3:
+            }break;
+            case 3:{
                 printf("enter isbn of book to be modified : ");
                 scanf("%lld",&isbn);
                 int choi = -1;
@@ -123,8 +125,8 @@ int admin_menu(int sd){
                 }else{
                     fprintf(stderr,"failed to modify book\n");
                 }
-                break;
-            case 4:
+            }break;
+            case 4:{
                 printf("enter isbn of book to be shown : ");
                 scanf("%lld",&isbn);
                 write(sd, &isbn, sizeof(long long));
@@ -136,14 +138,56 @@ int admin_menu(int sd){
                 }else{
                     fprintf(stderr, "cannot find the book\n");
                 }
-                break;
-            case 5:
+            }break;
+            case 5:{
                 char username[100],password[100];
-                
-                break;
-            default:
+                printf("username : ");
+                fflush(stdout);
+                read(STDIN_FILENO,username,100);
+                printf("password : ");
+                fflush(stdout);
+                read(STDIN_FILENO,password,100);
+                int len_4 = strcspn(username, "\n");
+                int len_5 = strcspn(password, "\n");
+                username[len_4] = '\0';
+                password[len_5] = '\0';
+                write(sd, username, 100);
+                write(sd, password, 100);
+                read(sd,&status, sizeof(int));
+                if(status == ALREADY_AVAL){
+                    fprintf(stderr, "user with same username already exists\n");
+                }else if(status == SUCCESS){
+                    printf("user added successully\n");
+                }else{
+                    fprintf(stderr,"failed to add user\n");
+                }
+            }break;
+            case 6:{
+                char uname[100],pass[100];
+                printf("username : ");
+                fflush(stdout);
+                read(STDIN_FILENO,uname,100);
+                printf("new password : ");
+                fflush(stdout);
+                read(STDIN_FILENO,pass,100);
+                int len_6 = strcspn(uname, "\n");
+                int len_7 = strcspn(pass, "\n");
+                uname[len_6] = '\0';
+                pass[len_7] = '\0';
+                write(sd, uname, 100);
+                write(sd, pass, 100);
+                read(sd,&status, sizeof(int));
+                if(status == NOT_FOUND){
+                    fprintf(stderr, "user not found\n");
+                }else if(status == SUCCESS){
+                    printf("user password modified successfully\n");
+                }else{
+                    fprintf(stderr, "failed to modify user password\n");
+                }
+            }break;
+            default:{
                 fprintf(stderr,"enter a valid option\n");
-                break;
+            }break;
         }
     };
     return SUCCESS;
@@ -165,6 +209,7 @@ int main(){
         fprintf(stderr,"socket failed\n");
         return FAILURE;
     }
+    signal(SIGINT, SIG_IGN);
     char link[15] = LINK;
     struct sockaddr_in server = {
         .sin_family = AF_INET,
@@ -176,5 +221,6 @@ int main(){
         return FAILURE;
     }
     menu(sd);
+    close(sd);
     return SUCCESS;
 }
