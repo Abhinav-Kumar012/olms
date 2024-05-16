@@ -26,21 +26,23 @@ int add_book(int fd,long long isbn,char *name,char *author,int copies){
     return SUCCESS;
 }
 //how to send it to client??
-int search_book(int fd,long long isbn){
+int search_book(int fd,int sd,long long isbn){
     lseek(fd, 0L, SEEK_SET);
     book temp;
-    int size_book = sizeof(book);
+    int size_book = sizeof(book),retval;
     while(read(fd, &temp, size_book) == size_book){
         if(temp.isbn == isbn && temp.status == BOOK_EXIST){
-            printf("book details : \n");
-            printf("isbn : %lld\n",temp.isbn);
-            printf("name : %s\n",temp.name);
-            printf("author : %s\n",temp.author);
-            printf("no of copies available : %d\n",temp.no_of_copies);
+            char out[1024];
+            sprintf(out,"book details : \nisbn : %lld\nname : %s\nauthor : %s\nno of copies available : %d\n",temp.isbn,temp.name,temp.author,temp.no_of_copies);
+            retval = SUCCESS;
+            write(sd,&retval,sizeof(int));
+            write(sd, out, 1024);
             return SUCCESS;
         }
     }
-    printf("Book not found\n");
+    // printf("Book not found\n");
+    retval = NOT_FOUND;
+    write(sd,&retval,sizeof(int));
     return NOT_FOUND;
 }
 int delete_book(int fd,long long isbn){
