@@ -54,6 +54,7 @@ void initilise_log(){
     log_fd = open("activity.log",O_CREAT | O_RDWR,DEFAULT_MODE);
 }
 void logger(char * message){
+    lseek(log_fd, 0L, SEEK_END);
     time_t t;
     time(&t);
     struct tm *tmp  = localtime(&t);
