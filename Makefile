@@ -9,7 +9,7 @@ SRC_DIR=src
 BIN_DIR=bin
 
 # Source files
-SERVER_SRCS=$(SRC_DIR)/book.c $(SRC_DIR)/server.c $(SRC_DIR)/transactions.c $(SRC_DIR)/user.c
+SERVER_SRCS=$(SRC_DIR)/book.c $(SRC_DIR)/server.c $(SRC_DIR)/transactions.c $(SRC_DIR)/user.c $(SRC_DIR)/utils.c
 CLIENT_SRCS=$(SRC_DIR)/client.c
 
 # Output files

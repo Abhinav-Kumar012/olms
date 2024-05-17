@@ -2,6 +2,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "../include/book.h"
+#include "../include/utils.h"
 #include "../include/universal.h"
 int add_book(int fd,long long isbn,char *name,char *author,int copies){
     lseek(fd,0L,SEEK_SET);
@@ -19,10 +20,13 @@ int add_book(int fd,long long isbn,char *name,char *author,int copies){
     };
     strcpy(b.author,author);
     strcpy(b.name,name);
+    struct flock lock = lock_file(fd);
     lseek(fd,0L,SEEK_END);
     if(write(fd,&b,size_book) != size_book){
+        unlock_file(fd, lock);
         return FAILURE;
     }
+    unlock_file(fd, lock);
     return SUCCESS;
 }
 //how to send it to client??
@@ -52,10 +56,13 @@ int delete_book(int fd,long long isbn){
     while(read(fd,&temp,size_book) == size_book){
         if(temp.isbn == isbn && temp.status == BOOK_EXIST){
             temp.status = BOOK_REMOVED;
-            lseek(fd,-size_book,SEEK_CUR);
+            off_t start = lseek(fd,-size_book,SEEK_CUR);
+            struct flock lock = lock_a_record(fd, start, size_book);
             if(write(fd,&temp,size_book) != size_book){
+                unlock_a_record(fd, lock);
                 return FAILURE;
             }
+            unlock_a_record(fd, lock);
             return SUCCESS;
         }
     }
@@ -83,8 +90,10 @@ int modify_book(int fd,long long isbn,char *value,int copies,int choice){
                     return INVALID_CHOICE;
                     break;
             }
-            lseek(fd, -size_book, SEEK_CUR);
+            off_t start = lseek(fd, -size_book, SEEK_CUR);
+            struct flock lock = lock_a_record(fd, start, size_book);
             write(fd, &temp, size_book);
+            unlock_a_record(fd, lock);
             return SUCCESS;
         }
     }

@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <string.h>
 #include "../include/user.h"
+#include "../include/utils.h"
 #include "../include/universal.h"
 int add_user(int fd,char *username,char *password){
     lseek(fd, 0L, SEEK_SET);
@@ -17,10 +18,13 @@ int add_user(int fd,char *username,char *password){
     };
     strcpy(u.name,username);
     strcpy(u.password, password);
+    struct flock lock = lock_file(fd);
     lseek(fd, 0L, SEEK_END);
     if(write(fd, &u, size_user) != size_user){
+        unlock_file(fd, lock);
         return FAILURE;
     }
+    unlock_file(fd, lock);
     return SUCCESS;
 }
 int modify_user(int fd,char *username,char *new_password){
@@ -31,8 +35,10 @@ int modify_user(int fd,char *username,char *new_password){
         if(strcmp(temp.name, username) == 0 && temp.exists == USER_EXIST){
             memset(temp.password,'\0',100);
             strcpy(temp.password, new_password);
-            lseek(fd, -size_user, SEEK_CUR);
+            off_t start = lseek(fd, -size_user, SEEK_CUR);
+            struct flock lock = lock_a_record(fd, start, size_user);
             write(fd, &temp, size_user);
+            unlock_a_record(fd, lock);
             return SUCCESS;
         }
     }
@@ -45,8 +51,10 @@ int delete_user(int fd, char *username){
     while (read(fd, &temp, size_user) == size_user){
         if(strcmp(temp.name, username) == 0 && temp.exists == USER_EXIST){
             temp.exists = USER_REMOVED;
-            lseek(fd, -size_user, SEEK_CUR);
+            off_t start = lseek(fd, -size_user, SEEK_CUR);
+            struct flock lock = lock_a_record(fd, start, size_user);
             write(fd, &temp, size_user);
+            unlock_a_record(fd, lock);
             return SUCCESS;
         }
     }

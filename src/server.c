@@ -165,6 +165,11 @@ int main(void){
         fprintf(stderr, "listen failed\n");
         return FAILURE;
     }
+    printf("  ooooooo  ooooo       oooo     oooo  oooooooo8 \n");
+    printf("o888   888o 888         8888o   888  888       \n");
+    printf("888     888 888         88 888o8 88   888oooooo\n");
+    printf("888o   o888 888      o  88  888  88          888\n");
+    printf("  88ooo88  o888ooooo88 o88o  8  o88o o88oooo888\n");
     while(true){
         socklen_t client_len = sizeof(client);
         int csd = accept(sd, (struct sockaddr *)&client,&client_len);
