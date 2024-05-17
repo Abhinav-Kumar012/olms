@@ -1,3 +1,4 @@
+#include <complex.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -29,7 +30,7 @@ int admin_menu(int sd){
         printf("enter a option : ");
         scanf("%d",&c1);
         if(c1 < 0 && c1 > 6){
-            fprintf(stderr, "enter a valid choice");
+            fprintf(stderr, "enter a valid choice\n");
             continue;
         }
         write(sd, &c1, sizeof(int));
@@ -192,12 +193,62 @@ int admin_menu(int sd){
     };
     return SUCCESS;
 }
+int normal_menu(int sd){
+    int c1 = -1;
+    while(1){
+        printf("issue a book -> 1\nreturn a book -> 2\nlog out -> 0\n");
+        printf("enter a option : ");
+        scanf("%d",&c1);
+        if(c1 < 0 && c1 > 2){
+            fprintf(stderr, "enter a valid choice\n");
+            continue;
+        }
+        write(sd, &c1, sizeof(int));
+        int status;
+        long long isbn;
+        switch (c1) {
+            case 0:{
+                printf("logged out\n");
+                fflush(stdout);
+                exit(SUCCESS);
+            }break;
+            case 1:{
+                printf("enter isbn of book to be borrowed : ");
+                scanf("%lld",&isbn);
+                write(sd, &isbn, sizeof(long long));
+                read(sd, &status, sizeof(int));
+                if(status == BOOK_ALREADY_BORROWED){
+                    fprintf(stderr,"book has already been borrowed\n");
+                }else if (status == SUCCESS) {
+                    printf("book borrowed successfully\n");
+                }else{
+                    fprintf(stderr,"failed to borrow book\n");
+                }
+            }break;
+            case 2:{
+                printf("enter isbn of book to be returned : ");
+                scanf("%lld",&isbn);
+                write(sd, &isbn, sizeof(long long));
+                read(sd, &status, sizeof(int));
+                if(status == BOOK_NOT_BORROWED){
+                    fprintf(stderr,"book has not been borrowed\n");
+                }else if (status == SUCCESS) {
+                    printf("book returned successfully\n");
+                }else{
+                    fprintf(stderr,"failed to return book\n");
+                }
+            }break;
+            default:
+                break;
+        }
+    }
+}
 int menu(int sd){
     int valid = take_creds(sd);
     if(valid == ADMIN_USER){
         return admin_menu(sd);
     }else if(valid == NORMAL_USER){
-        printf("2\n");
+        return normal_menu(sd);
     }else{
         printf("invalid user credentials\n");
         return FAILURE;

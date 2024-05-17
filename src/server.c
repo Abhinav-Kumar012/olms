@@ -21,7 +21,33 @@ void handle_sigint(int sig){
 typedef struct arg_1{
     int csd;
 } arg;
-int normal_fxn(int csd,char *uname){
+int normal_fxn(int csd,char *uname,int fd_books,int fd_users,int fd_trans){
+    int c = -1;
+    while(1){
+        read(csd, &c, sizeof(int));
+        if(c==0){
+            break;
+        }
+        int status;
+        switch (c) {
+            case 0:
+                break;
+            case 1:{
+                long long isbn;
+                read(csd, &isbn, sizeof(long long));
+                status = issue_book(fd_trans, fd_users, fd_books, uname, isbn);
+                write(csd, &status, sizeof(int));
+            }break;
+            case 2:{
+                long long isbn;
+                read(csd, &isbn, sizeof(long long));
+                status = return_book(fd_trans, fd_books, uname, isbn);
+                write(csd, &status, sizeof(int));
+            }break;
+            default:
+                break;
+        }
+    }
     return SUCCESS;
 }
 int admin_fxn(int csd,char *uname,int fd_books,int fd_users){
@@ -105,7 +131,7 @@ void *thread_fun(void *args){
             admin_fxn(csd,uname,fd_book,fd_user);
             break;
         case NORMAL_USER:
-            normal_fxn(csd, uname);
+            normal_fxn(csd, uname,fd_book,fd_user,fd_trans);
             break;
         default:
             fprintf(stderr,"invalid user\n");
