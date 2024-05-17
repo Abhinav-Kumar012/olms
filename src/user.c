@@ -24,6 +24,9 @@ int add_user(int fd,char *username,char *password){
         unlock_file(fd, lock);
         return FAILURE;
     }
+    char log_msg[512];
+    sprintf(log_msg, "user with username : %s added",username);
+    logger(log_msg);
     unlock_file(fd, lock);
     return SUCCESS;
 }
@@ -38,6 +41,9 @@ int modify_user(int fd,char *username,char *new_password){
             off_t start = lseek(fd, -size_user, SEEK_CUR);
             struct flock lock = lock_a_record(fd, start, size_user);
             write(fd, &temp, size_user);
+            char log_msg[512];
+            sprintf(log_msg, "user with username : %s password has been modified",username);
+            logger(log_msg);
             unlock_a_record(fd, lock);
             return SUCCESS;
         }
@@ -54,6 +60,9 @@ int delete_user(int fd, char *username){
             off_t start = lseek(fd, -size_user, SEEK_CUR);
             struct flock lock = lock_a_record(fd, start, size_user);
             write(fd, &temp, size_user);
+            char log_msg[512];
+            sprintf(log_msg, "user with username : %s deleted",username);
+            logger(log_msg);
             unlock_a_record(fd, lock);
             return SUCCESS;
         }
@@ -72,7 +81,10 @@ bool user_exists(int fd,char *username){
     return false;
 }
 int login(int fd,char *uname,char *pass,int choice){
+    char log_msg[512];
     if(strcmp(uname, "admin") == 0 && strcmp(pass, "admin123") == 0 && choice == 1){
+        sprintf(log_msg, "admin logged in");
+        logger(log_msg);
         return ADMIN_USER;
     }
     if(choice == 2){
@@ -81,6 +93,8 @@ int login(int fd,char *uname,char *pass,int choice){
         user temp;
         while (read(fd, &temp, size_user) == size_user){
             if(strcmp(temp.name, uname) == 0 && temp.exists == USER_EXIST && strcmp(temp.password, pass) == 0){
+                sprintf(log_msg, "user : %s logged in",uname);
+                logger(log_msg);
                 return NORMAL_USER;
             }
         }

@@ -37,6 +37,9 @@ int issue_book(int fd_trans,int fd_users,int fd_books,char *uname,long long isbn
         struct flock lock = lock_file(fd_trans);
         lseek(fd_trans, 0L, SEEK_END);
         write(fd_trans, &t, size_trans);
+        char log_msg[512];
+        sprintf(log_msg, "user with username : %s issued book of isbn : %lld",uname,isbn);
+        logger(log_msg);
         unlock_file(fd_trans, lock);
         return SUCCESS;
     }
@@ -70,6 +73,9 @@ int return_book(int fd_trans,int fd_books,char *uname,long long isbn){
             off_t start = lseek(fd_trans, -size_trans, SEEK_CUR);
             struct flock lock = lock_a_record(fd_trans, start, size_trans);
             write(fd_trans, &temp, size_trans);
+            char log_msg[512];
+            sprintf(log_msg, "user with username : %s returned book of isbn : %lld",uname,isbn);
+            logger(log_msg);
             unlock_a_record(fd_trans, lock);
             return SUCCESS;
         }

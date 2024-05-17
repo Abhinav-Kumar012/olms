@@ -26,6 +26,9 @@ int add_book(int fd,long long isbn,char *name,char *author,int copies){
         unlock_file(fd, lock);
         return FAILURE;
     }
+    char log_msg[512];
+    sprintf(log_msg,"book of isbn : %lld, name : %s, author : %s, number of copies : %d added",isbn,name,author,copies);
+    logger(log_msg);
     unlock_file(fd, lock);
     return SUCCESS;
 }
@@ -62,6 +65,9 @@ int delete_book(int fd,long long isbn){
                 unlock_a_record(fd, lock);
                 return FAILURE;
             }
+            char log_msg[512];
+            sprintf(log_msg, "book of isbn : %lld deleted",isbn);
+            logger(log_msg);
             unlock_a_record(fd, lock);
             return SUCCESS;
         }
@@ -72,18 +78,22 @@ int modify_book(int fd,long long isbn,char *value,int copies,int choice){
     lseek(fd, 0L, SEEK_SET);
     book temp;
     int size_book = sizeof(book);
+    char wx[250];
     while(read(fd, &temp, size_book) == size_book){
         if(temp.isbn == isbn && temp.status == BOOK_EXIST){
             switch (choice) {
                 case 1 : 
+                    sprintf(wx, "name from %s to %s",temp.name,value);
                     memset(temp.name, '\0', 100);
                     strcpy(temp.name, value);
                     break;
                 case 2 :
+                    sprintf(wx, "author from %s to %s",temp.author,value);
                     memset(temp.author, '\0', 100);
                     strcpy(temp.author, value);
                     break;
                 case 3 :
+                    sprintf(wx, "name from %d to %d",temp.no_of_copies,copies);
                     temp.no_of_copies = copies;
                     break;
                 default :
@@ -93,6 +103,9 @@ int modify_book(int fd,long long isbn,char *value,int copies,int choice){
             off_t start = lseek(fd, -size_book, SEEK_CUR);
             struct flock lock = lock_a_record(fd, start, size_book);
             write(fd, &temp, size_book);
+            char log_msg[512];
+            sprintf(log_msg, "book of isbn : %lld modified its %s",isbn,wx);
+            logger(log_msg);
             unlock_a_record(fd, lock);
             return SUCCESS;
         }
