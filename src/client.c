@@ -116,8 +116,8 @@ int admin_menu(int sd){
                         scanf("%d",&copies);
                         break;
                     default:
-                        fprintf(stderr, "choose a valid option\n");   
-                        continue;
+                        fprintf(stderr, "choose a valid option\n");
+                        strcpy(in,"\n");
                         break;
                 }
                 int len_3 = strcspn(in, "\n");

@@ -93,7 +93,7 @@ int modify_book(int fd,long long isbn,char *value,int copies,int choice){
                     strcpy(temp.author, value);
                     break;
                 case 3 :
-                    sprintf(wx, "name from %d to %d",temp.no_of_copies,copies);
+                    sprintf(wx, "number of copies from %d to %d",temp.no_of_copies,copies);
                     temp.no_of_copies = copies;
                     break;
                 default :
