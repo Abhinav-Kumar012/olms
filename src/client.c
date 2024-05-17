@@ -34,7 +34,7 @@ int take_creds(int sd){
 int admin_menu(int sd){
     int c1 = -1;
     while(1){
-        printf("add a book -> 1\ndelete a number -> 2\nmodify a book -> 3\nsearch a book -> 4\nadd a user -> 5\nmodify password of a user -> 6\nlog out -> 0\n");
+        printf("add a book -> 1\ndelete a book -> 2\nmodify a book -> 3\nsearch a book -> 4\nadd a user -> 5\nmodify password of a user -> 6\nlog out -> 0\n");
         printf("enter a option : ");
         scanf("%d",&c1);
         if(c1 < 0 && c1 > 6){
@@ -116,7 +116,6 @@ int admin_menu(int sd){
                         scanf("%d",&copies);
                         break;
                     default:
-                        fprintf(stderr, "choose a valid option\n");
                         strcpy(in,"\n");
                         break;
                 }

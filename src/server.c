@@ -127,7 +127,6 @@ void *thread_fun(void *args){
     read(csd, pass, 100);
     int user_type = login(fd_user, uname, pass,choice);
     if(user_type == INVALID_USER){
-        fprintf(stderr, "invalid user credentials\n");
         write(csd, &user_type, sizeof(int));
         return NULL;
     }
