@@ -9,4 +9,5 @@ typedef struct transaction_1 {
 } transaction;
 int issue_book(int fd_trans,int fd_users,int fd_books,char *uname,long long isbn);
 int return_book(int fd_trans,int fd_books,char *uname,long long isbn);
+int show_books(int fd_book,int fd_trans,char *uname,int csd);
 #endif

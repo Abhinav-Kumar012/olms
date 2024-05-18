@@ -82,3 +82,39 @@ int return_book(int fd_trans,int fd_books,char *uname,long long isbn){
     }
     return BOOK_NOT_BORROWED;
 }
+int show_books(int fd_book,int fd_trans,char *uname,int csd){
+    struct flock lock = lock_file(fd_trans);
+    lseek(fd_trans, 0L, SEEK_SET);
+    int size_trans = sizeof(transaction),no_of_books_raw = 0,curr_ind = 0;
+    transaction temp;
+    while(read(fd_trans,&temp,size_trans) == size_trans){
+        if(strcmp(temp.username, uname) == 0 && temp.returned == BOOK_BORROWED){
+            ++no_of_books_raw;
+        }
+    }
+    long long isbns[no_of_books_raw];
+    lseek(fd_trans, 0L, SEEK_SET);
+    while(read(fd_trans,&temp,size_trans) == size_trans){
+        if(strcmp(temp.username, uname) == 0 && temp.returned == BOOK_BORROWED){
+            isbns[curr_ind] = temp.isbn;
+            ++curr_ind;
+        }
+    }
+    unlock_file(fd_trans, lock);
+    int curr_ind2 = 0;
+    book *books_borrowed[curr_ind],*temp_book;
+    for(int i=0;i<curr_ind;i++){
+        temp_book = book_exists(fd_book, isbns[i]);
+        if(temp_book != NULL){
+            books_borrowed[curr_ind2] = temp_book;
+            ++curr_ind2;
+        }
+    }
+    write(csd, &curr_ind2, sizeof(int));
+    char out[1024];
+    for(int i=0;i<curr_ind2;i++){
+        sprintf(out,"\nisbn : %lld\nname : %s\nauthor : %s\n",books_borrowed[i]->isbn,books_borrowed[i]->name,books_borrowed[i]->author);
+        write(csd,out,1024);
+    }
+    return SUCCESS;
+}

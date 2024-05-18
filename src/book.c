@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include "../include/book.h"
@@ -122,4 +123,16 @@ bool book_available(int fd,long long isbn){
         }
     }
     return false;
+}
+book *book_exists(int fd,long long isbn){
+    lseek(fd, 0L, SEEK_SET);
+    int size_book = sizeof(book);
+    book *temp = (book *)malloc(size_book);
+    while(read(fd,temp,size_book) == size_book){
+        if(temp->isbn == isbn && temp->status == BOOK_EXIST){
+            return temp;
+        }
+    }
+    free(temp);
+    return NULL;
 }

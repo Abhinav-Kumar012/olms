@@ -47,6 +47,9 @@ int normal_fxn(int csd,char *uname,int fd_books,int fd_users,int fd_trans){
                 status = return_book(fd_trans, fd_books, uname, isbn);
                 write(csd, &status, sizeof(int));
             }break;
+            case 3:{
+                status = show_books(fd_books, fd_trans, uname, csd);
+            }break;
             default:
                 break;
         }

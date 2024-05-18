@@ -203,7 +203,7 @@ int admin_menu(int sd){
 int normal_menu(int sd){
     int c1 = -1;
     while(1){
-        printf("issue a book -> 1\nreturn a book -> 2\nlog out -> 0\n");
+        printf("issue a book -> 1\nreturn a book -> 2\nsee all borrowed books -> 3\nlog out -> 0\n");
         printf("enter a option : ");
         scanf("%d",&c1);
         if(c1 < 0 && c1 > 2){
@@ -243,6 +243,19 @@ int normal_menu(int sd){
                     printf("book returned successfully\n");
                 }else{
                     fprintf(stderr,"failed to return book\n");
+                }
+            }break;
+            case 3:{
+                int no_of_books = -1;
+                read(sd,&no_of_books,sizeof(int));
+                if(no_of_books == 0){
+                    printf("\nno books borrowed\n\n");
+                }else{
+                    char out[1024];
+                    for(int i = 0;i < no_of_books;i++){
+                        read(sd,out,1024);
+                        printf("%s\n",out);
+                    }
                 }
             }break;
             default:
