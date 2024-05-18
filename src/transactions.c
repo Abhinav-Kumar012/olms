@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include "../include/book.h"
@@ -115,6 +116,7 @@ int show_books(int fd_book,int fd_trans,char *uname,int csd){
     for(int i=0;i<curr_ind2;i++){
         sprintf(out,"\nisbn : %lld\nname : %s\nauthor : %s\n",books_borrowed[i]->isbn,books_borrowed[i]->name,books_borrowed[i]->author);
         write(csd,out,1024);
+        free(books_borrowed[i]);
     }
     return SUCCESS;
 }
