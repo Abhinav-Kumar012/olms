@@ -1,6 +1,6 @@
 ﻿# OLMS (online library mangement system)
 The Online Library Management System (OLMS) is a secure and efficient platform designed to streamline library operations. It features user authentication, password-protected administrative access, and comprehensive book management. Leveraging system calls for file handling and multithreading, along with socket programming for concurrent client access, OLMS ensures optimal performance, data consistency, and secure access to library resources.
-other requirements for project are mentioned in [MiniProject.pdf](MIniProject.pdf)
+other requirements for project are mentioned in [MiniProject.pdf](./MiniProject.pdf)
 ## Features 
   - admin user
 	- add books
@@ -16,8 +16,8 @@ other requirements for project are mentioned in [MiniProject.pdf](MIniProject.pd
 - the server generates the log file for successful change in library in ```activity.log``` file produced during runtime
 
 ## project structure
-```src``` : contains source code for server and client
-```include``` : contains all header files
+```src``` : contains source code for server and client \
+```include``` : contains all header files \
 ```bin``` : will store final binaries and other files produced during runtime like logs and binary files
 ## How to run
 ### installing  prerequisites
